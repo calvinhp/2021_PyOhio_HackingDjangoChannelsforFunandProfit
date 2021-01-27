@@ -8,30 +8,128 @@ date: IndyPy 2021
 date-meta: 2021
 keywords:
     - Python
+    - Django
     - Programming
-    - Code
+    - Async
+    - Websockets
 ---
 
-# Create Beautiful Slides {.semi-filtered data-background-image="images/abstract.jpg"}
-#### Calvin Hendryx-Parker, CTO
-#### Six Feet Up
+# Abusing Django Channels for Fun and Profit
 
-::::::::::::::{.credits}
-<a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@davidclode?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from David Clode"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">David Clode</span></a>
-::::::::::::::
+---
+
+Backstory
+
+Channels is awesome and async is becoming more a part of Django with each 3.x release
+
+---
+
+You need to know that a Websocket is...
+
+* Demo LoudSwarm Slack Message on the Front-end
+
+---
+
+You need to know a bit about how Django processes request
+
+HTTP Request -> Response Loop
+
+Channels adds inbound websockets 
+    really, it now wraps async views added in 3.1
+    3.0 only added an async router, channels was doing the old thing and really only did websockets
+
+Using a fully async event loop
+
+---
+
+Websocket Consumers
+Channel Layers  <-- lets the other two communicate
+Background Workers <-- Generally not used for incoming websockets, new-ish and allows for background tasks like Celery
+
+---
+
+# A Worker in Channels?
+
+What can you do with it?
+
+They listened for messages on the Channel Layer and then do some work. 
+
+Fast
+Easy
+Lightweight
+
+Beware: at-most-once operation
+
+Example: Generate Thumbnails
+
+---
+
+I have an idea, Discord requires me to talk to it async via a websocket to receive and send events
+
+We had been doing Slack integration via the webhook events and POSTing messages back
+
+---
+
+# Let's hack our own Worker
+
+We want something that Channels can do, but doesn't out of the box
+
+---
+
+We will do like the Channels `runworker` and make our own from the asgiref.server.StatelessServer
+
+---
+
+Wait, what is ASGI...
+
+Big talk, but here is the TL;DR
+
+See more here:
+<https://youtu.be/uRcnaI8Hnzg>
 
 ::: notes
-Example Notes
+This can be its own talk
 :::
 
+---
 
-# Easily {data-background-image="images/old-books.jpg"}
+# Why?
 
-- with background image
+We don't want to just respond to a channel layer message to make something happen
 
+We are turning the standard Channels concept a bit inside out.
 
-::::::::::::::{.credits}
-<a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@trnavskauni?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Trnava University"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Trnava University</span></a>
-::::::::::::::
+---
 
+Run a worker, but have it start a long running coroutine on start.
+
+## two examples
+we receive messages from Discord and we send them to our clients
+
+We generate a notification on a scheduled celery task and we want to send it to Discord
+
+---
+
+Use this for any old long running task...
+
+--- 
+
+Wish list
+* get this added to Channels codebase
+* Show examples of long running and single shot coroutines
+* Add options for two classifications of coroutines
+    * Ones that start right away
+    * Optionally ones the run after those stop
+
+---
+
+# Tips and Tricks (aka not in the docs)
+
+* Channel Layer Capacity defaults to 100
+    If you push more to a channel group, they drop silently
+  
+
+---
+
+# So long and Thanks for all the Fish...
 
