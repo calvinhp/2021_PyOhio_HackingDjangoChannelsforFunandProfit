@@ -18,7 +18,7 @@ keywords:
 # Abusing Django Channels {data-background-image="images/bermix-studio-aX1hN4uNd-I-unsplash.jpg"}
 ## for Fun and Profit
 
-</br>
+<br>
 
 ### IndyPy, Feb 2021
 
@@ -66,7 +66,7 @@ This is all done synchronously since we are living in WSGI land.
 
 Ok...  so just swap `wsgi.py` with `asgi.py`?
 
-</br>
+<br>
 
 See <https://arunrocks.com/a-guide-to-asgi-in-django-30-and-its-performance/>
 
@@ -115,8 +115,26 @@ Using a fully async event loop
 # Consumer Example
 
 ~~~{.stretch .python}
-class MyConsumer():
-    pass
+from channels.generic.websocket import JsonWebsocketConsumer
+
+class MyConsumer(JsonWebsocketConsumer):
+    def connect(self):
+        self.accept()
+        self.send_json({"connected": "true"})
+        
+    def disconnect(self, close_code):
+        pass
+        
+    def receive_json(self, content, **kwargs)):
+        type_code = content["type"]
+        data = content["message"]
+        
+        if type_code == "greeting":
+            if (name := data.get("name")):
+                self.send_json({
+                    "type": "reply_to_greeting",
+                    "message": f"hello there, {name}!"
+                })
 ~~~
 
 ---
@@ -161,11 +179,11 @@ Example: Generate Thumbnails
 
 # Real World Use Case
 
-</br>
+<br>
 
 ## Discord Chat Bot
 
-</br>
+<br>
 
 ### Built inside of Django
 
@@ -188,8 +206,24 @@ We want something that Channels can do, but doesn't out of the box
 We will do like the Channels `runworker` and make our own from the asgiref.server.StatelessServer
 
 ~~~{.stretch .python}
-class MyWorkerExample():
-    pass
+# Only the one method is different from the default worker
+
+    async def handle(self):
+        """
+        Listens on all the provided channels and handles the messages.
+        """
+        # For each channel, launch its own listening coroutine
+        lackeys = []
+        for channel in self.channels:
+            lackeys.append(asyncio.ensure_future(self.listener(channel)))
+
+        # Add coroutine for outgoing websocket connection to Discord API
+        lackeys.append(asyncio.ensure_future(self.outgoing_connection()))
+
+        # Most of our time is spent here, waiting until all the lackeys exit
+        await asyncio.wait(lackeys)
+        # See if any of the listeners had an error (e.g. channel layer error)
+        [lackey.result() for lackey in lackeys]
 ~~~
 
 ---
@@ -210,11 +244,52 @@ Run a worker, but have it start a long running coroutine on start.
 
 we receive messages from Discord and we send them to our clients
 
-We generate a notification on a scheduled celery task and we want to send it to Discord
+~~~{.stretch .python}
+class ChatClient(discord.Client):
+    async def on_message(self, message):
+        data = {
+            "channel": str(message.channel.id),
+            "event_ts": str(message.created_at.timestamp()),
+            "text": message.content,
+            "ts": str(message.created_at.timestamp()),
+            "user": message.author.nick,
+            "event_id": str(message.id),
+            "event_time": int(message.created_at.timestamp()),
+            "team_id": str(message.guild.id),
+        }
+
+        await make_webhook_transaction(data)
+~~~
+---
+
+We generate a notification on a scheduled celery task and we want to send it to Discord so we write a consumer that listens for our message
 
 ~~~{.stretch .python}
-class DiscordThingamabob():
-    pass
+from discordworker import discord_client
+
+class DiscordSender(AsyncConsumer):
+    async def send_to_discord(self, message):
+
+        text_msg = message["message"]
+        chat_chan = int(message["discord_channel"])
+        channel = discord_client.client.get_channel(chat_chan)
+
+        await channel.send(text_msg)  # this is Discord's "channel", not ours
+~~~
+
+---
+
+and we send it like this
+
+~~~{.stretch .python}
+await channel_layer.send(
+    "discord_send",  # name from ChannelNameRouter config
+    dict(
+        type="send_to_discord",  # maps to method name on consumer
+        discord_channel=self.chat_chan,
+        message=message,
+    ),
+)
 ~~~
 
 ---
