@@ -31,19 +31,20 @@ keywords:
 
 ---
 
-# Backstory
+# Backstory {data-background-image="images/nadine-shaabana-LlenwFpj41c-unsplash.jpg"}
 
 * The web was mostly synchronous up until a few years ago
 * Async is becoming more a part of Django with each 3.x release
 
 ::: notes
 Django started life as a synchronous web application server.
+<span>Photo by <a href="https://unsplash.com/@nadineshaabana?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Nadine Shaabana</a> on <a href="https://unsplash.com/s/photos/story?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
 :::
 
 ---
 
-# Requests and Responses
+# Requests and Responses {data-background-image="images/ben-white-4Bs9kSDJsdc-unsplash.jpg"}
 
 ![Django Request Response Loop](images/middleware.svg)
 
@@ -53,11 +54,13 @@ See <https://www.youtube.com/watch?v=RLo9RJhbOrQ>
 You need to know a bit about how Django processes requests.
 
 This is all done synchronously since we are living in WSGI land.
+
+<span>Photo by <a href="https://unsplash.com/@benwhitephotography?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Ben White</a> on <a href="https://unsplash.com/s/photos/whisper?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 :::
 
 ---
 
-# WSGI vs ASGI
+# WSGI vs ASGI {data-background-image="images/thanos-pal-bakq5bepwbQ-unsplash.jpg"}
 
 ## Let's make it work bi-directional!
 
