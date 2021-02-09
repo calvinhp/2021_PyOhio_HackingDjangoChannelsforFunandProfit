@@ -14,7 +14,8 @@ keywords:
     - WebSockets
 ---
 
-# Abusing Django Channels
+
+# Abusing Django Channels {data-background-image="images/bermix-studio-aX1hN4uNd-I-unsplash.jpg"}
 ## for Fun and Profit
 
 </br>
@@ -23,6 +24,10 @@ keywords:
 
 #### Calvin Hendryx-Parker
 #### Peter Hull
+
+::: notes
+<span>Photo by <a href="https://unsplash.com/@bermixstudio?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Bermix Studio</a> on <a href="https://unsplash.com/s/photos/dollar?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+:::
 
 ---
 
@@ -62,7 +67,11 @@ Ok...  so just swap `wsgi.py` with `asgi.py`?
 
 See <https://arunrocks.com/a-guide-to-asgi-in-django-30-and-its-performance/>
 
+See more on ASGI here: <https://youtu.be/uRcnaI8Hnzg>
+
 ::: notes
+This can be its own talk
+
 ASGI is a superset of WSGI and can call WSGI callables
 
 Arun Ravindran, the author of Django Design Patterns and Best Practices, has talked about this quite a bit in his blog.
@@ -98,7 +107,18 @@ Using a fully async event loop
 * **Channel Layers** 👈 How we talk to and between our code
 * **Background Workers** 👈 Allows for background tasks like Celery
 
-</br>
+---
+
+# Consumer Example
+
+~~~{.stretch .python}
+class MyConsumer():
+    pass
+~~~
+
+---
+
+# Let's talk about Background Workers
 
 ### That last bit is where we will focus
 
@@ -164,18 +184,10 @@ We want something that Channels can do, but doesn't out of the box
 
 We will do like the Channels `runworker` and make our own from the asgiref.server.StatelessServer
 
----
-
-Wait, what is ASGI...
-
-Big talk, but here is the TL;DR
-
-See more here:
-<https://youtu.be/uRcnaI8Hnzg>
-
-::: notes
-This can be its own talk
-:::
+~~~{.stretch .python}
+class MyWorkerExample():
+    pass
+~~~
 
 ---
 
@@ -196,6 +208,11 @@ Run a worker, but have it start a long running coroutine on start.
 we receive messages from Discord and we send them to our clients
 
 We generate a notification on a scheduled celery task and we want to send it to Discord
+
+~~~{.stretch .python}
+class DiscordThingamabob():
+    pass
+~~~
 
 ---
 
