@@ -1,10 +1,10 @@
 ---
 title-prefix: Six Feet Up
-pagetitle: Abusing Django Channels for Fun and Profit
+pagetitle: Hacking Django Channels for Fun and Profit
 author: Calvin Hendryx-Parker, CTO, Six Feet Up
 author-meta:
     - Calvin Hendryx-Parker
-date: IndyPy 2021
+date: DjangoCon Europe 2021
 date-meta: 2021
 keywords:
     - Python
@@ -14,15 +14,14 @@ keywords:
     - WebSockets
 ---
 
-# Abusing Django Channels {data-background-image="images/bermix-studio-aX1hN4uNd-I-unsplash.jpg"}
+# Hacking Django Channels {data-background-image="images/bermix-studio-aX1hN4uNd-I-unsplash.jpg"}
 ## for Fun and Profit
 
 <br>
 
-### IndyPy, Feb 2021
+### DjangoCon Europe, June 2021
 
 #### Calvin Hendryx-Parker
-#### Peter Hull
 
 ::: notes
 <span>Photo by <a href="https://unsplash.com/@bermixstudio?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Bermix Studio</a> on <a href="https://unsplash.com/s/photos/dollar?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
