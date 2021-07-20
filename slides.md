@@ -4,7 +4,7 @@ pagetitle: Hacking Django Channels for Fun and Profit
 author: Calvin Hendryx-Parker, CTO, Six Feet Up
 author-meta:
     - Calvin Hendryx-Parker
-date: DjangoCon Europe 2021
+date: PyOhio 2021
 date-meta: 2021
 keywords:
     - Python
@@ -19,7 +19,7 @@ keywords:
 
 <br>
 
-### DjangoCon Europe, June 2021
+### PyOhio, July 2021
 
 #### Calvin Hendryx-Parker
 
@@ -137,7 +137,7 @@ class MyConsumer(JsonWebsocketConsumer):
 application = SentryAsgiMiddleware(
     ProtocolTypeRouter(
         {
-            # (http->django views is added by default)
+            "http": get_asgi_application(),
             "websocket": AuthMiddlewareStack(
                 URLRouter(loudswarm.chat.routing.websocket_urlpatterns)
             ),
